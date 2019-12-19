@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/caicaishmily/pony-express/issues"
   },
-  "homepage": "https://github.com/caicaishmily/pony-express#readme"
+  "homepage": "https://github.com/caicaishmily/pony-express#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
 }
