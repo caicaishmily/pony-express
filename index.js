@@ -1,9 +1,11 @@
 const http = require('http')
+const express = require('express')
 
 const users = require('./fixtures/users')
 const emails = require('./fixtures/emails')
 
-let server = http.createServer((req, res) => {
+let app = express()
+app.use((req, res) => {
   let route  = req.method +  ' ' + req.url
 
   if(route === 'GET /users') {
@@ -14,5 +16,7 @@ let server = http.createServer((req, res) => {
     res.end("You asked for" + route)
   }
 })
+
+let server = http.createServer(app)
 
 server.listen(4002)
