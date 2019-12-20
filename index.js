@@ -4,30 +4,23 @@ const users = require('./fixtures/users')
 const emails = require('./fixtures/emails')
 
 let app = express()
+let router = express.Router()
 
 let getUsersRoute = (req, res) => {
-  res.send(users)
+  let user = users.find(user => user.id === req.params.id)
+  res.send(user)
 }
 
 let getEmailsRoute = (req, res) => {
-  res.send(emails)
+  let email = emails.find(email => email.id === req.params.id)
+  res.send(email)
 }
 
-let routes = {
-  "GET /users": getUsersRoute,
-  "GET /emails": getEmailsRoute
-}
+router.get('/users', getUsersRoute)
+router.get('/users/:id', getUsersRoute)
+router.get('/emails', getEmailsRoute)
+router.get('/emails/:id', getEmailsRoute)
 
-let noRouteFound = (req, res) => {
-  let route = req.method + '' + req.url
-  res.end("You asked for " + route)
-}
-
-app.use((req, res) => {
-  let route  = req.method +  ' ' + req.url
-
-  let handler = routes[route] || noRouteFound
-  handler(req, res)
-})
+app.use(router)
 
 app.listen(4003)
