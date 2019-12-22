@@ -1,13 +1,22 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+const jwt = require('jsonwebtoken')
 const findUser = require('../lib/find-user')
+
+const signature = '1m_s3cure'
+
+let createToken = (user) => jwt.sign(
+  {userId: user.id},
+  signature,
+  {expiresIn: '7d'}
+)
 
 let createTokenRoute = (req, res) => {
   let credentials = req.body
   let user = findUser.byCredentials(credentials)
 
   if(user) {
-    let token = 'I am user ' + user.id
+    let token = createToken(user)
     res.status(201)
     res.send(token)
   } else {
