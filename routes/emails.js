@@ -1,9 +1,15 @@
 const express = require('express')
 
+const jsonBodyParser = require('../lib/json-body-parser')
+const generateId = require('../lib/generate-id')
 const emails = require('../fixtures/emails')
 
-const readBody = require('../lib/read-body')
-const generateId = require('../lib/generate-id')
+class NotFound extends Error {
+  constructor(message) {
+    super(message)
+    this.name = "NotFound"
+  }
+}
 
 let getEmailsRoute = (req, res) => {
   res.send(emails)
@@ -11,22 +17,21 @@ let getEmailsRoute = (req, res) => {
 
 let getEmailRoute = (req, res) => {
   let email = emails.find(email => email.id === req.params.id)
+  if(!email) { throw new NotFound() }
   res.send(email)
 }
 
 let createEmailRoute = async (req, res) => {
-  let body = await readBody(req)
-  let newEmail = {...JSON.parse(body), id: generateId()}
+  let newEmail = {...req.body, id: generateId()}
   emails.push(newEmail)
   res.status(201)
   res.send(newEmail)
 }
 
 let updateEmailRoute = async (req, res) => {
-  let body = await readBody(req)
   let email = emails.find(email => email.id === req.params.id)
 
-  Object.assign(email, JSON.parse(body))
+  Object.assign(email, req.body)
   res.status(200)
   res.send(email)
 }
@@ -41,11 +46,11 @@ let emailsRouter = express.Router()
 
 emailsRouter.route('/')
   .get(getEmailsRoute)
-  .post(createEmailRoute)
+  .post(jsonBodyParser, createEmailRoute)
 
 emailsRouter.route('/:id')
   .get(getEmailRoute)
-  .patch(updateEmailRoute)
+  .patch(jsonBodyParser, updateEmailRoute)
   .delete(deleteEmailRoute)
 
 module.exports = emailsRouter
