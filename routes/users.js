@@ -1,4 +1,5 @@
 const express = require('express')
+const requireAuth = require('../lib/require-auth')
 
 const users =  require('../fixtures/users')
 
@@ -12,6 +13,8 @@ let getUserRoute = (req, res) => {
 }
 
 let usersRouter = express.Router()
+
+usersRouter.use(requireAuth)
 
 usersRouter.get('/', getUsersRoute)
 usersRouter.get('/:id', getUserRoute)
