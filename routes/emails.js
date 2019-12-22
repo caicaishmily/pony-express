@@ -1,8 +1,8 @@
 const express = require('express')
 
-const emails = require('../fixtures/emails')
-
+const jsonBodyParser = require('../lib/json-body-parser')
 const generateId = require('../lib/generate-id')
+const emails = require('../fixtures/emails')
 
 let getEmailsRoute = (req, res) => {
   res.send(emails)
@@ -38,11 +38,11 @@ let emailsRouter = express.Router()
 
 emailsRouter.route('/')
   .get(getEmailsRoute)
-  .post(createEmailRoute)
+  .post(jsonBodyParser, createEmailRoute)
 
 emailsRouter.route('/:id')
   .get(getEmailRoute)
-  .patch(updateEmailRoute)
+  .patch(jsonBodyParser, updateEmailRoute)
   .delete(deleteEmailRoute)
 
 module.exports = emailsRouter
