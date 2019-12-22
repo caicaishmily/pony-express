@@ -1,12 +1,13 @@
 const express = require('express')
+const morgan = require('morgan')
 
 const userRouter = require('./routes/users')
 const emailsRouter = require('./routes/emails')
 
-const logger = require('./lib/logger')
 const notFoundHandler = require('./lib/not-found-handler')
 
 let app = express()
+let logger = morgan('tiny')
 
 app.use(logger)
 app.use(notFoundHandler)
