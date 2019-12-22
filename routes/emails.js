@@ -4,12 +4,20 @@ const jsonBodyParser = require('../lib/json-body-parser')
 const generateId = require('../lib/generate-id')
 const emails = require('../fixtures/emails')
 
+class NotFound extends Error {
+  constructor(message) {
+    super(message)
+    this.name = "NotFound"
+  }
+}
+
 let getEmailsRoute = (req, res) => {
   res.send(emails)
 }
 
 let getEmailRoute = (req, res) => {
   let email = emails.find(email => email.id === req.params.id)
+  if(!email) { throw new NotFound() }
   res.send(email)
 }
 
