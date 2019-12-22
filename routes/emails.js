@@ -28,7 +28,7 @@ let getEmailRoute = (req, res) => {
 }
 
 let createEmailRoute = async (req, res) => {
-  let attachments = req.files.map(file => file.filename)
+  let attachments = (req.files || []).map(file => '/uploads/' + file.filename)
   let newEmail = {...req.body, id: generateId(), attachments}
   emails.push(newEmail)
   res.status(201)
