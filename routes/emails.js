@@ -5,6 +5,7 @@ const multer= require('multer')
 
 const generateId = require('../lib/generate-id')
 const emails = require('../fixtures/emails')
+const requireAuth = require('../lib/require-auth')
 
 class NotFound extends Error {
   constructor(message) {
@@ -50,6 +51,8 @@ let deleteEmailRoute = (req, res) => {
 }
 
 let emailsRouter = express.Router()
+
+emailsRouter.use(requireAuth)
 
 emailsRouter.route('/')
   .get(getEmailsRoute)
