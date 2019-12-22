@@ -1,19 +1,11 @@
 const express = require('express')
 
-const users = require('./fixtures/users')
-const emails = require('./fixtures/emails')
+const userRouter = require('./routes/users')
+const emailsRouter = require('./routes/emails')
 
 let app = express()
-app.use((req, res) => {
-  let route  = req.method +  ' ' + req.url
 
-  if(route === 'GET /users') {
-    res.send(users)
-  } else if (route === 'GET /emails') {
-    res.send(emails)
-  } else {
-    res.end("You asked for" + route)
-  }
-})
+app.use("/users", userRouter)
+app.use("/emails", emailsRouter)
 
-app.listen(4002)
+app.listen(4003)
