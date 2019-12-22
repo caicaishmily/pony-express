@@ -22,10 +22,27 @@ let createEmailRoute = async (req, res) => {
   res.send(newEmail)
 }
 
+let updateEmailRoute = async (req, res) => {
+  let body = await readBody(req)
+  let email = emails.find(email => email.id === req.params.id)
+
+  Object.assign(email, JSON.parse(body))
+  res.status(200)
+  res.send(email)
+}
+
+let deleteEmailRoute = (req, res) => {
+  let index = emails.findIndex(email => email.id === req.params.id)
+  emails.splice(index, 1)
+  res.sendStatus(204)
+}
+
 let emailsRouter = express.Router()
 
 emailsRouter.get('/', getEmailsRoute)
 emailsRouter.get('/:id', getEmailRoute)
 emailsRouter.post('/', createEmailRoute)
+emailsRouter.patch('/:id', updateEmailRoute)
+emailsRouter.delete('/:id', deleteEmailRoute)
 
 module.exports = emailsRouter
