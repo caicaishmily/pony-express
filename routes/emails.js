@@ -2,7 +2,6 @@ const express = require('express')
 
 const emails = require('../fixtures/emails')
 
-const readBody = require('../lib/read-body')
 const generateId = require('../lib/generate-id')
 
 let getEmailsRoute = (req, res) => {
@@ -15,18 +14,16 @@ let getEmailRoute = (req, res) => {
 }
 
 let createEmailRoute = async (req, res) => {
-  let body = await readBody(req)
-  let newEmail = {...JSON.parse(body), id: generateId()}
+  let newEmail = {...req.body, id: generateId()}
   emails.push(newEmail)
   res.status(201)
   res.send(newEmail)
 }
 
 let updateEmailRoute = async (req, res) => {
-  let body = await readBody(req)
   let email = emails.find(email => email.id === req.params.id)
 
-  Object.assign(email, JSON.parse(body))
+  Object.assign(email, req.body)
   res.status(200)
   res.send(email)
 }
