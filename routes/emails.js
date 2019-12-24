@@ -37,20 +37,13 @@ let createEmailRoute = async (req, res) => {
   res.send(newEmail)
 }
 
-let updateEmailPolicy = (req) => {
-  let email = emails.find(email => email.id === req.params.id)
-  let user = req.user
-  return user.id === email.from
-}
+let updateEmailPolicy = (user, email) => user.id === email.from
 
-let deleteEmailPolicy = (req) => {
-  let email = emails.find(email => email.id === req.params.id)
-  let user = req.user
-  return user.id === email.to
-}
+let deleteEmailPolicy = (user, email) => user.id === email.to
 
 let updateEmailRoute = async (req, res) => {
   let email = emails.find(email => email.id === req.params.id)
+  req.authorize(email)
 
   Object.assign(email, req.body)
   res.status(200)
@@ -58,7 +51,11 @@ let updateEmailRoute = async (req, res) => {
 }
 
 let deleteEmailRoute = (req, res) => {
+  let email = emails.find(email => email.id === req.params.id)
   let index = emails.findIndex(email => email.id === req.params.id)
+
+  req.authorize(email)
+
   emails.splice(index, 1)
   res.sendStatus(204)
 }
