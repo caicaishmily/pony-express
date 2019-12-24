@@ -6,6 +6,7 @@ const multer= require('multer')
 const generateId = require('../lib/generate-id')
 const emails = require('../fixtures/emails')
 const requireAuth = require('../lib/require-auth')
+const enforce = require('../lib/enforce')
 
 class NotFound extends Error {
   constructor(message) {
@@ -36,24 +37,16 @@ let createEmailRoute = async (req, res) => {
   res.send(newEmail)
 }
 
-let authorizeUpdateEmailRoute = (req, res, next) => {
+let updateEmailPolicy = (req) => {
   let email = emails.find(email => email.id === req.params.id)
   let user = req.user
-  if(user.id === email.from) {
-    next()
-  } else {
-    res.sendStatus(403)
-  }
+  return user.id === email.from
 }
 
-let authorizeDeleteEmailRoute = (req, res, next) => {
+let deleteEmailPolicy = (req) => {
   let email = emails.find(email => email.id === req.params.id)
   let user = req.user
-  if(user.id === email.to) {
-    next()
-  } else {
-    res.sendStatus(403)
-  }
+  return user.id === email.to
 }
 
 let updateEmailRoute = async (req, res) => {
@@ -85,11 +78,11 @@ emailsRouter.route('/')
 emailsRouter.route('/:id')
   .get(getEmailRoute)
   .patch(
-    authorizeUpdateEmailRoute,
+    enforce(updateEmailPolicy),
     bodyParser.json(),
     updateEmailRoute)
   .delete(
-    authorizeDeleteEmailRoute,
+    enforce(deleteEmailPolicy),
     deleteEmailRoute
   )
 
