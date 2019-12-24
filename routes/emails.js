@@ -38,16 +38,26 @@ let createEmailRoute = async (req, res) => {
 
 let updateEmailRoute = async (req, res) => {
   let email = emails.find(email => email.id === req.params.id)
-
-  Object.assign(email, req.body)
-  res.status(200)
-  res.send(email)
+  let user = req.user
+  if(user.id === email.id) {
+    Object.assign(email, req.body)
+    res.status(200)
+    res.send(email)
+  } else {
+    res.sendStatus(403)
+  }
 }
 
 let deleteEmailRoute = (req, res) => {
-  let index = emails.findIndex(email => email.id === req.params.id)
-  emails.splice(index, 1)
-  res.sendStatus(204)
+  let email = emails.find(email => email.id === req.params.id)
+  let user = req.user
+  if(user.id === email.to) {
+    let index = emails.findIndex(email => email.id === req.params.id)
+    emails.splice(index, 1)
+    res.sendStatus(204)
+  } else {
+    res.sendStatus(403)
+  }
 }
 
 let emailsRouter = express.Router()
