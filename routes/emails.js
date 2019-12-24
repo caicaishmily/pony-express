@@ -36,28 +36,38 @@ let createEmailRoute = async (req, res) => {
   res.send(newEmail)
 }
 
-let updateEmailRoute = async (req, res) => {
+let authorizeUpdateEmailRoute = (req, res, next) => {
   let email = emails.find(email => email.id === req.params.id)
   let user = req.user
-  if(user.id === email.id) {
-    Object.assign(email, req.body)
-    res.status(200)
-    res.send(email)
+  if(user.id === email.from) {
+    next()
   } else {
     res.sendStatus(403)
   }
 }
 
-let deleteEmailRoute = (req, res) => {
+let authorizeDeleteEmailRoute = (req, res, next) => {
   let email = emails.find(email => email.id === req.params.id)
   let user = req.user
   if(user.id === email.to) {
-    let index = emails.findIndex(email => email.id === req.params.id)
-    emails.splice(index, 1)
-    res.sendStatus(204)
+    next()
   } else {
     res.sendStatus(403)
   }
+}
+
+let updateEmailRoute = async (req, res) => {
+  let email = emails.find(email => email.id === req.params.id)
+
+  Object.assign(email, req.body)
+  res.status(200)
+  res.send(email)
+}
+
+let deleteEmailRoute = (req, res) => {
+  let index = emails.findIndex(email => email.id === req.params.id)
+  emails.splice(index, 1)
+  res.sendStatus(204)
 }
 
 let emailsRouter = express.Router()
@@ -74,7 +84,13 @@ emailsRouter.route('/')
 
 emailsRouter.route('/:id')
   .get(getEmailRoute)
-  .patch(bodyParser.json(), updateEmailRoute)
-  .delete(deleteEmailRoute)
+  .patch(
+    authorizeUpdateEmailRoute,
+    bodyParser.json(),
+    updateEmailRoute)
+  .delete(
+    authorizeDeleteEmailRoute,
+    deleteEmailRoute
+  )
 
 module.exports = emailsRouter
